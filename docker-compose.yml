@@ -1,0 +1,24 @@
+services:
+  djangoapp:
+    container_name: e-commerce-django
+    # container_name: <container_name>
+    build:
+      context: . #indica que vai usar o arquivo dockerfile na raiz do projeto
+    ports:
+      - 8000:8000 #redireciona a porta 8000 do computador para a 8000 da imagem
+    volumes: #mapei os volumens
+      - ./djangoapp:/djangoapp #sincroniza a pasta com a pasta do conteiner
+      - ./data/web/static:/data/web/static/
+      - ./data/web/media:/data/web/media/
+    env_file:
+      - ./dotenv_files/.env
+    depends_on:
+      - psql
+  psql:
+    # container_name: psql_<container_name>
+    container_name: psql_e-commerce-django
+    image: postgres:16.2-alpine3.19
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data/
+    env_file:
+      - ./dotenv_files/.env
