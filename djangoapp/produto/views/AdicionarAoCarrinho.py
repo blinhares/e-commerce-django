@@ -5,12 +5,6 @@ from django.http import HttpResponse
 
 
 # Create your views here.
-class Pagar(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse(self.__class__.__name__)
-class FecharPedido(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse(self.__class__.__name__)
-class Detalhe(View):
+class AdicionarAoCarrinho(View):
     def get(self, *args, **kwargs):
         return HttpResponse(self.__class__.__name__)
