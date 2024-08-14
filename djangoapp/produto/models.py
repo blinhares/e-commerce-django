@@ -3,7 +3,7 @@ import os
 from PIL import Image
 from django.db import models
 from django.utils.text import slugify
-from utils import utils
+from utils import utils # type: ignore
 
 
 class Produto(models.Model):
@@ -12,7 +12,10 @@ class Produto(models.Model):
     descricao_longa = models.TextField()
     imagem = models.ImageField(
         upload_to='produto_imagens/%Y/%m/', blank=True, null=True)
-    slug = models.SlugField(unique=True, blank=True, null=True)
+    slug = models.SlugField(
+        unique=True, 
+        blank=True, 
+        null=True)
     preco_marketing = models.FloatField(verbose_name='Preço')
     preco_marketing_promocional = models.FloatField(
         default=0, verbose_name='Preço Promo.')
@@ -25,17 +28,17 @@ class Produto(models.Model):
         )
     )
 
-    # def get_preco_formatado(self):
-    #     return utils.formata_preco(self.preco_marketing)
-    
-    # get_preco_formatado.short_description = 'Preço'
+    def get_preco_formatado(self):
+        return utils.formata_preco(self.preco_marketing)
+    #define o nome curto para a função do model
+    get_preco_formatado.short_description = 'Preço' # type: ignore
 
-    # def get_preco_promocional_formatado(self):
-    #     return utils.formata_preco(self.preco_marketing_promocional)
-    
-    # get_preco_promocional_formatado.short_description = 'Preço Promo.'
+    def get_preco_promocional_formatado(self):
+        return utils.formata_preco(self.preco_marketing_promocional)
+    #define o nome curto para a função do model
+    get_preco_promocional_formatado.short_description = 'Preço Promo.' # type: ignore
 
-    @staticmethod #porque n tem o sel como argumento
+    @staticmethod #porque n tem o self como argumento
     def resize_image(img:models.ImageField, new_width:int=800):
         img_full_path:str = os.path.join( 
             settings.MEDIA_ROOT,
@@ -50,7 +53,11 @@ class Produto(models.Model):
 
         new_height = round((new_width * original_height) / original_width)
 
-        new_img = img_pil.resize((new_width, new_height), Image.LANCZOS)
+        new_img = img_pil.resize(
+            (new_width, new_height), 
+            # Image.LANCZOS, #TODO : vERIFICAR SE A RETIRADA DISSO N CAUSA ERROS
+            Image.Resampling.LANCZOS)
+            
         new_img.save(
             img_full_path,
             optimize=True,
@@ -69,7 +76,7 @@ class Produto(models.Model):
 
         if self.imagem:
             self.resize_image(
-                self.imagem, 
+                self.imagem,  # type: ignore
                 max_image_size)
 
     def __str__(self):
