@@ -10,6 +10,7 @@ class ProdutoAdmin(admin.ModelAdmin):
     """Classe de Produto Para mostrar o Inline"""
     list_display = [
         'nome',
+        'tipo',
         'descricao_curta',
         'get_preco_formatado',
         'get_preco_promocional_formatado'
