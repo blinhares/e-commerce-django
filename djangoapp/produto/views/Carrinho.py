@@ -7,5 +7,12 @@ from django.http import HttpResponse
 
 # Create your views here.
 class Carrinho(View):
+    template_name = 'produto/carrinho.html'
+    context_object_name = 'carrinho'
+
     def get(self, *args, **kwargs):
-        return HttpResponse(self.__class__.__name__)
+        return render(
+            self.request,
+            self.template_name,
+            )
+        

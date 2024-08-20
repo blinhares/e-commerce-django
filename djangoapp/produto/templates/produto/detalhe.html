@@ -41,22 +41,30 @@
 
             <form action="{% url "produto:adicionaraocarrinho" %}" id="form-add-to-cart">
 
-                {% if produto.tipo == "V" %}
-                    <div class="form-group">
-                        <select id="select-variacoes" name="vid" 
-                         class="form-control form-control-lg">
-                            {% for variacao in produto.variacao_set.all %}
-                            
+                <div class="form-group">
+                    <select id="select-variacoes" name="vid" 
+                        class="form-control form-control-lg">
+                        {% for variacao in produto.variacao_set.all %}
+
+                            {% if produto.tipo == "V" %}
                                 <option data-preco="{{variacao.preco | formata_preco}}" 
                                 data-preco-promocional="{{variacao.preco_promocional | formata_preco}}" 
                                 value="{{variacao.id}}">{{variacao.nome}}
                                 </option>
-                                
-                            {% endfor %} 
+                            {% else %}
+                                <option data-preco="{{variacao.preco | formata_preco}}" 
+                                data-preco-promocional="{{variacao.preco_promocional | formata_preco}}" 
+                                value="{{variacao.id}}">{{produto.nome}}
+                                </option>
+                            {% endif %}
+
+                        
                             
-                        </select>
-                    </div>
-                {% endif %}
+                            
+                        {% endfor %} 
+                        
+                    </select>
+                </div>
 
                 <div class="text-left">
                     <button type="submit" class="btn btn-primary btn-lg btn-block">
