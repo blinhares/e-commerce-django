@@ -11,8 +11,14 @@ class Carrinho(View):
     context_object_name = 'carrinho'
 
     def get(self, *args, **kwargs):
+        #TODO verfificar se enviar o contexto por aqui reduz o 
+        # numero de requisições ao banco de dados
+        # contexto = {
+        #     'carrinho': self.request.session.get('carrinho',{})
+        # }
         return render(
             self.request,
             self.template_name,
+            # contexto
             )
         

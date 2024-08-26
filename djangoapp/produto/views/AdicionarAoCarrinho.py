@@ -101,23 +101,23 @@ class AdicionarAoCarrinho(View):
         #TODO esse if é descessessario uma vez que na 
         # funcao get_object_or_404 é emitido um ERRO 
         # caso o id n seja encontrado
-        if not self.variacao_id:
-            messages.error(
-                self.request,
-                'Produto Inexistente.'
-            )
-        #####
+        # if not self.variacao_id:
+        #     messages.error(
+        #         self.request,
+        #         'Produto Inexistente.'
+        #     )
+        # #####
 
         variacao_produto = get_object_or_404(
             models.Variacao,
             id=self.variacao_id
         )
 
+        #TODO - adicionar essa condição no view da pagina
         if variacao_produto.estoque < 1:
             messages.error(
                 self.request,
                 'Estoque do Produto Insuficiente'
-                #TODO - adicionar essa condição no view da pagina
             )
             return redirect(http_referer)
 
