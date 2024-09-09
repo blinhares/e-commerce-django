@@ -15,3 +15,13 @@ def cart_totals(carrinho):# type: ignore
              for item in carrinho.values())
         ] # type: ignore
     )
+
+def cart_totals(carrinho):
+    return sum(
+        [
+            p_promo
+            if (p_promo:= item.get('preco_quantitativo_promocional'))
+            else item.get('preco_quantitativo')
+            for item in carrinho.values()
+        ]
+    )

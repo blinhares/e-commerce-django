@@ -8,7 +8,7 @@ from django.http import HttpResponse
 class Pagar(View):
     def get(self, *args, **kwargs):
         return HttpResponse(self.__class__.__name__)
-class FecharPedido(View):
+class SalvarPedido(View):
     def get(self, *args, **kwargs):
         return HttpResponse(self.__class__.__name__)
 class Detalhe(View):

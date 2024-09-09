@@ -5,6 +5,6 @@ from django.http import HttpResponse
 
 
 # Create your views here.
-class Finalizar(View):
+class ResumoDaCompra(View):
     def get(self, *args, **kwargs):
         return HttpResponse(self.__class__.__name__)

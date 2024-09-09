@@ -10,4 +10,4 @@ class ListaProdutos(ListView):
     model = models.Produto
     template_name = 'produto/lista.html'
     context_object_name = 'produtos'
-    paginate_by = 3 #numero de produtos por pagina
+    paginate_by = 6 #numero de produtos por pagina

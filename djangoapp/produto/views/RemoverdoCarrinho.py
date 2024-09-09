@@ -45,16 +45,16 @@ class RemoverDoCarrinho(View):
         if self.variacao_id not in (carrinho:=self.request.session['carrinho']):
             self.retornar_a_pagina_origen()
         
+        del carrinho[self.variacao_id]
+        
+        self.request.session.save() 
+        
         messages.success(
             self.request,
             f'Produto {carrinho[self.variacao_id]["produto_nome"]} - '\
             f'{carrinho[self.variacao_id]["variacao_nome"]}'
             ' removido do carrinho'
         )
-
-        del carrinho[self.variacao_id]
-
-        self.request.session.save() 
 
 
     def get(self, *args, **kwargs):
