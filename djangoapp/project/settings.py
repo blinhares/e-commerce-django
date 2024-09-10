@@ -56,7 +56,14 @@ INSTALLED_APPS = [
     "produto",#produto app
     "perfil",#perfil app
     "pedido",#pedido app
+    # Add para formulários
+    "crispy_forms",
+    "crispy_bootstrap5",
 ]
+
+#config do Crispy_forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -66,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    
     #TODO - Remover depois
     #Debug Toolbar
     "debug_toolbar.middleware.DebugToolbarMiddleware",
