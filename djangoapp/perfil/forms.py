@@ -39,39 +39,33 @@ class UserForm(forms.ModelForm):
                   'password2', 
                   'email')
     def esta_logado(self):
-        return self.usuario.is_authenticated
+        return self.usuario.is_authenticated # type: ignore
 
+    def dados_ja_existe(self,dado)-> bool:
+        """ Verifica se um dado especifico ja existe no banco de dados"""
+        data_form = self.cleaned_data.get(dado)
+        dicio = dict([(dado,data_form)])  
+        data_db =  User.objects.filter(**dicio).first()
+        return bool(data_db)
+
+    
     def usuario_ja_existe(self):
         '''Verifica se usuário enviado no formulário existe'''
-        usuario_form = self.cleaned_data.get('username')
-        banco_dados = User.objects.filter(
-            username=usuario_form).first()
-        
-        if banco_dados:
-            banco_dados = banco_dados.username
-        
-        existe =  str(usuario_form) == str(banco_dados)
 
-        if existe:
+        if self.dados_ja_existe('username'):
             self.validation_erro_msgs['username'] = "Usuário já existe!"
+            return True
 
-        return existe
+        return False
     
     def email_ja_existe(self):
         '''Verifica se email enviado no formulário existe'''
-        email_form = self.cleaned_data.get('email')
-        banco_dados = User.objects.filter(
-            email=email_form).first()
         
-        if banco_dados:
-            banco_dados = banco_dados.email
-
-        existe =  str(email_form) == str(banco_dados)
-
-        if existe:
+        if self.dados_ja_existe('email'):
             self.validation_erro_msgs['email'] = "E-mail já existe!"
+            return True
 
-        return existe
+        return False
     
     def senhas_validas(self):
         '''Verifica se as senhas enviadas no formulário são iguais'''
@@ -89,7 +83,7 @@ class UserForm(forms.ModelForm):
 
              
 
-    def clean(self, *args, **kwargs):
+    def clean(self, *args, **kwargs): # type: ignore
         data = self.data
         cleaned = self.cleaned_data
         self.validation_erro_msgs = {}
