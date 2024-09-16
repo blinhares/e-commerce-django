@@ -1,10 +1,7 @@
-from typing import Any, Mapping
 from django import forms
 from django.contrib.auth.models import User
-from django.core.files.base import File
-from django.db.models.base import Model
-from django.forms.utils import ErrorList
 from . import models
+
 
 class PerfilForm(forms.ModelForm):
     class Meta:
@@ -14,87 +11,85 @@ class PerfilForm(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
-    #transformar o campo de senha em um dado não exigido
     password = forms.CharField(
         required=False,
-        widget=forms.PasswordInput(render_value=True),
-        label='Senha'
+        widget=forms.PasswordInput(),
+        label='Senha',
     )
-    #confimacao de senha
+
     password2 = forms.CharField(
         required=False,
-        widget=forms.PasswordInput(render_value=True),
-        label='Confirmação Senha'
+        widget=forms.PasswordInput(),
+        label='Confirmação senha'
     )
-    def __init__(self, usuario=None, *args, **kwargs) -> None:
+
+    def __init__(self, usuario=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.usuario = usuario
 
     class Meta:
         model = User
-        fields = ('first_name', 
-                  'last_name', 
-                  'username', 
-                  'password', 
-                  'password2', 
-                  'email')
-    def esta_logado(self):
-        return self.usuario.is_authenticated # type: ignore
+        fields = ('first_name', 'last_name', 'username', 'password',
+                  'password2', 'email')
 
-    def dados_ja_existe(self,dado)-> bool:
-        """ Verifica se um dado especifico ja existe no banco de dados"""
-        data_form = self.cleaned_data.get(dado)
-        dicio = dict([(dado,data_form)])  
-        data_db =  User.objects.filter(**dicio).first()
-        return bool(data_db)
-
-    
-    def usuario_ja_existe(self):
-        '''Verifica se usuário enviado no formulário existe'''
-
-        if self.dados_ja_existe('username'):
-            self.validation_erro_msgs['username'] = "Usuário já existe!"
-            return True
-
-        return False
-    
-    def email_ja_existe(self):
-        '''Verifica se email enviado no formulário existe'''
-        
-        if self.dados_ja_existe('email'):
-            self.validation_erro_msgs['email'] = "E-mail já existe!"
-            return True
-
-        return False
-    
-    def senhas_validas(self):
-        '''Verifica se as senhas enviadas no formulário são iguais'''
-        senha_form = self.cleaned_data.get('password')
-        senha_form2 = self.cleaned_data.get('password2')
-
-        if senha_form and senha_form2 and senha_form == senha_form2:
-            if len(str(senha_form))< 6:
-                self.validation_erro_msgs['password'] = "Senha deve ter no mínimo 6 caracteres!"
-                return False
-            return True
-        
-        self.validation_erro_msgs['password'] = "As senhas devem ser iguais!"
-        return False
-
-             
-
-    def clean(self, *args, **kwargs): # type: ignore
+    def clean(self, *args, **kwargs):
         data = self.data
         cleaned = self.cleaned_data
-        self.validation_erro_msgs = {}
+        validation_error_msgs = {}
 
+        usuario_data = cleaned.get('username')
+        email_data = cleaned.get('email')
+        password_data = cleaned.get('password')
+        password2_data = cleaned.get('password2')
 
-        self.usuario_ja_existe()
-        self.senhas_validas()
-        self.email_ja_existe()
-            
+        usuario_db = User.objects.filter(username=usuario_data).first()
+        email_db = User.objects.filter(email=email_data).first()
 
-        if self.validation_erro_msgs:
-                raise forms.ValidationError(self.validation_erro_msgs)
+        error_msg_user_exists = 'Usuário já existe'
+        error_msg_email_exists = 'E-mail já existe'
+        error_msg_password_match = 'As duas senhas não conferem'
+        error_msg_password_short = 'Sua senha precisa de pelo menos 6 caracteres'
+        error_msg_required_field = 'Este campo é obrigatório.'
 
-        # return super().clean()#TODO remover?
+        # Usuários logados: atualização
+        if self.usuario:
+            if usuario_db:
+                if usuario_data != usuario_db.username:
+                    validation_error_msgs['username'] = error_msg_user_exists
+
+            if email_db:
+                if email_data != email_db.email:
+                    validation_error_msgs['email'] = error_msg_email_exists
+
+            if password_data:
+                if password_data != password2_data:
+                    validation_error_msgs['password'] = error_msg_password_match
+                    validation_error_msgs['password2'] = error_msg_password_match
+
+                if len(password_data) < 6:
+                    validation_error_msgs['password'] = error_msg_password_short
+
+        # Usuários não logados: cadastro
+        else:
+            if usuario_db:
+                validation_error_msgs['username'] = error_msg_user_exists
+
+            if email_db:
+                validation_error_msgs['email'] = error_msg_email_exists
+
+            if not password_data:
+                validation_error_msgs['password'] = error_msg_required_field
+
+            if not password2_data:
+                validation_error_msgs['password2'] = error_msg_required_field
+
+            if password_data != password2_data:
+                validation_error_msgs['password'] = error_msg_password_match
+                validation_error_msgs['password2'] = error_msg_password_match
+
+            if len(password_data) < 6:
+                validation_error_msgs['password'] = error_msg_password_short
+
+        if validation_error_msgs:
+            raise(forms.ValidationError(validation_error_msgs))

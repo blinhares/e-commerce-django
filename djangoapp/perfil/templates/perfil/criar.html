@@ -1,16 +1,24 @@
 {% extends "static/base.html" %}
+{% comment "crispy é para visualizar formularios" %}{% endcomment %}
 {% load crispy_forms_tags %}
 
 {% block conteudo %}
 <div class="row">
+    {% if not request.user.is_authenticated %}
     <div class="col-lg">
         <h1>Login</h1>
     </div>
+    {% endif %}
+
     <div class="col-lg">
+        {% block titulocadastro %}
         <h1>Cadastro</h1>
+        {% endblock titulocadastro %}
+        
         <form action="" method="post">
             {% csrf_token %}
             {{ userform | crispy}}
+            {{ perfilform | crispy}}
 
             <div class="row">
                 <div class="col">
